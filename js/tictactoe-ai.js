@@ -1,10 +1,9 @@
 
 var TicTacToe_AI = function tic_tac_toe_ai(game) {
 
-  if ( !(this instanceof tic_tac_toe_ai) )
+  if ( !(this instanceof tic_tac_toe_ai) ) {
     return new TicTacToe_AI(game);
-
-  var _game = game;
+  }
 
   var TicTacToe = {
     CellState: {
@@ -12,7 +11,6 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
       cross: 'X',
       nought: 'O'
     },
-
     Players: {
       human: 'X',
       cpu: 'O'
@@ -24,20 +22,24 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
     }
   }
 
-  var _context = this,
-    _best_move = { };
+  // Private member variables
+  var _game = game,
+      _context = this;
 
+  // Private method to return the best move for
+  // the current player and board state.
   var _bestMove = function(player, board) {
 
-    var _state = {
+    var best_move = { };
+
+    var state = {
       player: player,
       board: board
     };
 
-    _maxMove(_state, _best_move);
+    _maxMove(state, best_move);
 
-    return _best_move;
-
+    return best_move;
   };
 
   // Finds the optimal tic-tac-toe move for the current
