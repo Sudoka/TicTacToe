@@ -97,7 +97,7 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
       TicTacToe.Players.cpu : TicTacToe.Players.human
   };
 
-  // we need to calculate a score indicating how good the board
+  // We need to calculate a score indicating how good the board
   // state is for the current player.
   var _evaluateStaticPosition = function(state, gameState)
   {
@@ -115,7 +115,7 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
     }
   }
 
-  // returns a list of all possible moves based on the
+  // Returns a list of all possible moves based on the
   // specified state of the game.
   var _possibleMoves = function(state) {
     var moves = [], grid = state.board.grid;
@@ -136,7 +136,7 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
 
   // Returns an object with info about the state of the game. If the
   // game is over, the object will specify either the winner and the pattern that won
-  // or that the game was a draw
+  // or that the game was a draw.
   // If the game is not over, the object will specify that the game is ongoing.
   this.gameState = function(board)
   {
