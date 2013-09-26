@@ -125,11 +125,12 @@ TicTacToe.Game.prototype = {
 
   createEmptyGrid: function()
   {
+    var empty = TicTacToe.CellState.empty;
     return {
       grid: [
-        [TicTacToe.CellState.empty,TicTacToe.CellState.empty,TicTacToe.CellState.empty],
-        [TicTacToe.CellState.empty,TicTacToe.CellState.empty,TicTacToe.CellState.empty],
-        [TicTacToe.CellState.empty,TicTacToe.CellState.empty,TicTacToe.CellState.empty]
+        [empty, empty, empty],
+        [empty, empty, empty],
+        [empty, empty, empty]
       ],
       gridSize: {
         rows: 3,
