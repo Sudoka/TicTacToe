@@ -216,7 +216,7 @@ TicTacToe.Game.prototype = {
         return;
       }
 
-      if (this.board.grid[grid_pos.c][grid_pos.r]) {
+      if (!this.isCellOpen()) {
         return;
       }
 
