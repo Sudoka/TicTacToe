@@ -210,9 +210,6 @@ TicTacToe.Game.prototype = {
   {
     if (this.game_state == TicTacToe.GameState.playing) {
 
-      this.waiting_el.style.visibility = "visible";
-      this.game_state = TicTacToe.GameState.waiting;
-
       var grid_pos = this.canvasCoordToGridPos(this.stage.getMousePosition());
 
       if (!grid_pos) {
@@ -222,6 +219,9 @@ TicTacToe.Game.prototype = {
       if (this.board.grid[grid_pos.c][grid_pos.r]) {
         return;
       }
+
+      this.waiting_el.style.visibility = "visible";
+      this.game_state = TicTacToe.GameState.waiting;
 
       this.play_el.disabled = true;
       this.board.grid[grid_pos.c][grid_pos.r] = TicTacToe.CellState.cross;
