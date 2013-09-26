@@ -24,12 +24,12 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
 
   // Private member variables
   var _game = game,
-      _context = this;
+    _context = this;
 
   // Private method to return the best move for
   // the current player and board state.
-  var _bestMove = function(player, board) {
-
+  var _bestMove = function(player, board)
+  {
     var best_move = { };
 
     var state = {
@@ -52,8 +52,7 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
     var gameState = _context.gameState(state.board);
 
     // if game is finished, return score based on static position
-    if (gameState.winner || gameState.draw)
-    {
+    if (gameState.winner || gameState.draw) {
       return _evaluateStaticPosition(state, gameState);
     }
 
@@ -62,8 +61,7 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
 
     var v = TicTacToe.Positions.losing;
 
-    for(var i = 0 ; i < moveList.length; i++)
-    {
+    for(var i = 0 ; i < moveList.length; i++) {
       var move = moveList[i];
 
       _makeMove(state, move);
@@ -72,8 +70,7 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
 
       var curRating = -1 * _maxMove(state, _oponents_best_move);
 
-      if (curRating > v)
-      {
+      if (curRating > v) {
         v = curRating;
         bestMove.move = move;
       }
@@ -83,7 +80,8 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
     return v;
   };
 
-  var _makeMove = function(state, move) {
+  var _makeMove = function(state, move)
+  {
     state.board.grid[move.c][move.r] = state.player;
 
     // we need to switch the player state after a move is made
@@ -91,7 +89,8 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
       TicTacToe.Players.cpu : TicTacToe.Players.human
   };
 
-  var _retractMove = function(state, move) {
+  var _retractMove = function(state, move)
+  {
     state.board.grid[move.c][move.r] = TicTacToe.CellState.empty;
 
     // we need to switch the player state after a move is retracted
@@ -103,23 +102,19 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
   // state is for the current player.
   var _evaluateStaticPosition = function(state, gameState)
   {
-    if (!gameState.winner)
-    {
+    if (!gameState.winner) {
       return TicTacToe.Positions.neutral;
-    }
-    else if(state.player == gameState.winner)
-    {
+    } else if(state.player == gameState.winner) {
       return TicTacToe.Positions.winning;
-    }
-    else
-    {
+    } else {
       return TicTacToe.Positions.losing;
     }
   }
 
   // Returns a list of all possible moves based on the
   // specified state of the game.
-  var _possibleMoves = function(state) {
+  var _possibleMoves = function(state)
+  {
     var moves = [], grid = state.board.grid;
 
     for (var c = 0; c < state.board.gridSize.cols; c++) {
