@@ -19,8 +19,9 @@ var TicTacToe = {
 TicTacToe.Game = function tic_tac_toe(play_id, game_id, waiting_id) {
 
   // let's make sure that the new operator is always used
-  if ( !(this instanceof tic_tac_toe) )
+  if ( !(this instanceof tic_tac_toe) ) {
     return new TicTacToe.Game(play_id, game_id, waiting_id);
+  }
 
   this.ai = new TicTacToe_AI(this);
   this.board = this.createEmptyGrid();
@@ -28,12 +29,12 @@ TicTacToe.Game = function tic_tac_toe(play_id, game_id, waiting_id) {
   this.waiting_el = document.getElementById(waiting_id);
   this.waiting_el.style.visibility = "hidden";
   this.game_id = game_id;
-  this.hoverColor = "#3394de";
-  this.mouseState = TicTacToe.SelectionState.none;
-  this.gameState = TicTacToe.GameState.playing;
-  this.hoverGridPos = null;
-  this.drawQueued = false;
-  this.letterRadius = 30;
+  this.hover_color = "#3394de";
+  this.mouse_state = TicTacToe.SelectionState.none;
+  this.game_state = TicTacToe.GameState.playing;
+  this.hover_grid_pos = null;
+  this.draw_queued = false;
+  this.letter_radius = 30;
   this.padding = 8;
 };
 
@@ -87,7 +88,7 @@ TicTacToe.Game.prototype = {
       fontFamily: 'Calibri',
       fill: '#555',
       align: 'center',
-      width: this.letterRadius * 2
+      width: this.letter_radius * 2
     };
 
     y_offset = .7;
@@ -103,7 +104,7 @@ TicTacToe.Game.prototype = {
         letter = new Kinetic.Text(config);
         letter.setText(grid[c][r] != TicTacToe.CellState.empty ? grid[c][r] : ' ');
         letter.setPosition(coord.x, coord.y + config.fontSize * y_offset );
-        letter.setOffset(this.letterRadius, this.letterRadius);
+        letter.setOffset(this.letter_radius, this.letter_radius);
 
         rect = new Kinetic.Rect({
           stroke: '#888',
@@ -113,13 +114,13 @@ TicTacToe.Game.prototype = {
         });
 
         rect.setPosition(coord.x, coord.y );
-        rect.setOffset(this.letterRadius, this.letterRadius);
+        rect.setOffset(this.letter_radius, this.letter_radius);
 
         this.gridLayer.add(rect);
         this.gridLayer.add(letter);
       }
     }
-    this.gridLayer.setWidth(this.letterRadius * 2 * this.board.gridSize.rows);
+    this.gridLayer.setWidth(this.letter_radius * 2 * this.board.gridSize.rows);
   },
 
   createEmptyGrid: function()
@@ -144,8 +145,7 @@ TicTacToe.Game.prototype = {
     stage.on("mouseout", $.proxy(this.onMouseOut, this));
     stage.on("mousedown touchstart", $.proxy(this.onMouseDown, this));
 
-    var el = this.play_el;
-    var that = this;
+    var el = this.play_el, that = this;
     el.addEventListener("click", function() {
       that.resetGame();
     })
@@ -153,96 +153,103 @@ TicTacToe.Game.prototype = {
 
   canvasCoordToGridPos: function(coord)
   {
-    var gridPos = {
-      c: Math.floor( (coord.x - this.padding) / (this.letterRadius * 2) ),
-      r: Math.floor( (coord.y - this.padding) / (this.letterRadius * 2) )
+    var grid_pos = {
+      c: Math.floor( (coord.x - this.padding) / (this.letter_radius * 2) ),
+      r: Math.floor( (coord.y - this.padding) / (this.letter_radius * 2) )
     };
 
-    if ( gridPos.r < 0 ||
-      gridPos.c < 0 ||
-      gridPos.r >= this.board.gridSize.rows ||
-      gridPos.c >= this.board.gridSize.cols ) {
+    if ( grid_pos.r < 0 ||
+      grid_pos.c < 0 ||
+      grid_pos.r >= this.board.gridSize.rows ||
+      grid_pos.c >= this.board.gridSize.cols ) {
       return null;
     }
 
-    return gridPos;
+    return grid_pos;
   },
 
   gridPosToCanvasCoord: function(pos)
   {
     return {
-      x: this.padding + (pos.c +.5) * this.letterRadius * 2,
-      y: this.padding + (pos.r +.5) * this.letterRadius * 2
+      x: this.padding + (pos.c +.5) * this.letter_radius * 2,
+      y: this.padding + (pos.r +.5) * this.letter_radius * 2
     };
   },
 
   isHovering: function()
   {
-    return this.mouseState == TicTacToe.SelectionState.hovering;
+    return this.mouse_state == TicTacToe.SelectionState.hovering;
   },
 
   isCellOpen: function()
   {
-    return !this.hoverGridPos
-      || !this.board.grid[this.hoverGridPos.c][this.hoverGridPos.r]
+    return !this.hover_grid_pos
+        || !this.board.grid[this.hover_grid_pos.c][this.hover_grid_pos.r]
   },
 
   onMouseOver: function()
   {
-    if (this.mouseState == TicTacToe.SelectionState.none &&
-      this.gameState == TicTacToe.GameState.playing) {
-      this.mouseState = TicTacToe.SelectionState.hovering;
-      this.hoverGridPos = this.canvasCoordToGridPos(this.stage.getMousePosition());
+    if (this.mouse_state == TicTacToe.SelectionState.none &&
+      this.game_state == TicTacToe.GameState.playing) {
+      this.mouse_state = TicTacToe.SelectionState.hovering;
+      this.hover_grid_pos = this.canvasCoordToGridPos(this.stage.getMousePosition());
       this.queueDraw();
     }
   },
 
   onMouseOut: function()
   {
-    if (this.mouseState == TicTacToe.SelectionState.hovering) {
-      this.mouseState = TicTacToe.SelectionState.none;
-      this.hoverGridPos = null;
+    if (this.mouse_state == TicTacToe.SelectionState.hovering) {
+      this.mouse_state = TicTacToe.SelectionState.none;
+      this.hover_grid_pos = null;
       this.queueDraw();
     }
   },
 
   onMouseDown: function()
   {
-    if (this.gameState == TicTacToe.GameState.playing) {
+    if (this.game_state == TicTacToe.GameState.playing) {
 
       this.waiting_el.style.visibility = "visible";
-      this.gameState = TicTacToe.GameState.waiting;
+      this.game_state = TicTacToe.GameState.waiting;
 
-      var gridPos = this.canvasCoordToGridPos(this.stage.getMousePosition());
-      if (!gridPos) return;
+      var grid_pos = this.canvasCoordToGridPos(this.stage.getMousePosition());
 
-      if (this.board.grid[gridPos.c][gridPos.r]) return;
+      if (!grid_pos) {
+        return;
+      }
+
+      if (this.board.grid[grid_pos.c][grid_pos.r]) {
+        return;
+      }
 
       this.play_el.disabled = true;
-      this.board.grid[gridPos.c][gridPos.r] = TicTacToe.CellState.cross;
+      this.board.grid[grid_pos.c][grid_pos.r] = TicTacToe.CellState.cross;
 
       this.queueDraw();
 
-      var that = this;
+      // the computer responds too quickly. Let's make the computer seem more
+      // realistic by giving it a reaction time similar to what a human might expect.
+      var reaction_time = 200, that = this;
       setTimeout(function() {
         that.ai.getNextGameState(that.board);
         that.queueDraw();
-      }, 200);
+      }, reaction_time);
     }
   },
 
   fitToSize: function()
   {
-    var width = this.board.gridSize.cols * this.letterRadius * 2 + this.padding * 2;
-    var height = this.board.gridSize.rows * this.letterRadius * 2 + this.padding * 2;
+    var width = this.board.gridSize.cols * this.letter_radius * 2 + this.padding * 2;
+    var height = this.board.gridSize.rows * this.letter_radius * 2 + this.padding * 2;
 
     this.stage.setSize(width, height);
   },
 
   queueDraw: function()
   {
-    if (!this.drawQueued) {
-      this.drawQueued = true;
+    if (!this.draw_queued) {
+      this.draw_queued = true;
       requestAnimFrame($.proxy(this.onDraw, this));
     }
   },
@@ -260,14 +267,14 @@ TicTacToe.Game.prototype = {
 
     this.stage.draw();
 
-    this.drawQueued = false;
+    this.draw_queued = false;
   },
 
   drawHover: function()
   {
     var coord, highlight;
-    if (this.isHovering() && this.hoverGridPos) {
-      coord = this.gridPosToCanvasCoord(this.hoverGridPos);
+    if (this.isHovering() && this.hover_grid_pos) {
+      coord = this.gridPosToCanvasCoord(this.hover_grid_pos);
       highlight = this.getHighlight(coord);
       this.selectionLayer.add(highlight);
     }
@@ -293,7 +300,7 @@ TicTacToe.Game.prototype = {
       fontFamily: 'Calibri',
       fill: 'red',
       align: 'center',
-      width: this.letterRadius * 2
+      width: this.letter_radius * 2
     };
 
     var coord, letter;
@@ -303,25 +310,27 @@ TicTacToe.Game.prototype = {
     letter = new Kinetic.Text(config);
     letter.setText('C');
     letter.setPosition(coord.x, coord.y + config.fontSize * -0.22 );
-    letter.setOffset(this.letterRadius, this.letterRadius);
+    letter.setOffset(this.letter_radius, this.letter_radius);
 
     this.drawingLayer.add(letter);
   },
 
   cpuMove: function(move)
   {
-    if (!move)
+    if (!move) {
       return;
+    }
 
     if (move.c < 0 || move.c > 2
-      || move.r < 0 || move.r > 2)
+      || move.r < 0 || move.r > 2) {
       return;
+    }
 
     this.board.grid[move.c][move.r] = TicTacToe.CellState.nought;
 
     this.play_el.disabled = false;
     this.waiting_el.style.visibility = "hidden";
-    this.gameState = TicTacToe.GameState.playing;
+    this.game_state = TicTacToe.GameState.playing;
     this.queueDraw();
   },
 
@@ -335,15 +344,15 @@ TicTacToe.Game.prototype = {
     var strokeWidth = 2;
 
     var config = {
-      stroke: this.hoverColor,
+      stroke: this.hover_color,
       listening: false
     };
 
     var highlight = new Kinetic.Rect(config);
     highlight.setPosition(coord.x, coord.y);
-    highlight.setOffset(this.letterRadius - strokeWidth / 2, this.letterRadius - strokeWidth / 2);
-    highlight.setWidth(this.letterRadius * 2 - strokeWidth);
-    highlight.setHeight(this.letterRadius * 2 - strokeWidth);
+    highlight.setOffset(this.letter_radius - strokeWidth / 2, this.letter_radius - strokeWidth / 2);
+    highlight.setWidth(this.letter_radius * 2 - strokeWidth);
+    highlight.setHeight(this.letter_radius * 2 - strokeWidth);
 
     return highlight;
   },
@@ -361,7 +370,9 @@ TicTacToe.Game.prototype = {
     this.play_el.disabled = false;
     this.waiting_el.style.visibility = "hidden";
 
-    this.gameFinished({ cats: true });
+    this.gameFinished({
+      cats_game: true
+    });
   },
 
   cpuWon: function(data)
@@ -372,9 +383,9 @@ TicTacToe.Game.prototype = {
 
   gameFinished: function(data)
   {
-    this.gameState = TicTacToe.GameState.finished;
+    this.game_state = TicTacToe.GameState.finished;
 
-    if (data.cats) {
+    if (data.cats_game) {
       this.drawCatsGame();
     } else {
       var start = this.gridPosToCanvasCoord(data.combination[0]);
@@ -395,8 +406,8 @@ TicTacToe.Game.prototype = {
   {
     this.drawingLayer.removeChildren();
     this.board = this.createEmptyGrid();
-    this.mouseState = TicTacToe.SelectionState.none;
-    this.gameState = TicTacToe.GameState.playing;
+    this.mouse_state = TicTacToe.SelectionState.none;
+    this.game_state = TicTacToe.GameState.playing;
     this.setRestartText();
     this.queueDraw();
   }
