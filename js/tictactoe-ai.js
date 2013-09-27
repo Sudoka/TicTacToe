@@ -24,12 +24,13 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
 
   // Private member variables
   var _game = game,
-    _context = this;
+      _context = this;
 
   // Private method to return the best move for
   // the current player and board state.
   var _bestMove = function(player, board)
   {
+    // use objects so we can pass them in by reference
     var best_move = { };
 
     var state = {
@@ -57,27 +58,27 @@ var TicTacToe_AI = function tic_tac_toe_ai(game) {
     }
 
     // get a list of all possible moves for the current state
-    var moveList = _possibleMoves(state);
+    var move_list = _possibleMoves(state);
 
-    var v = TicTacToe.Positions.losing;
+    var score = TicTacToe.Positions.losing;
 
-    for(var i = 0 ; i < moveList.length; i++) {
-      var move = moveList[i];
+    for(var i = 0 ; i < move_list.length; i++) {
+      var move = move_list[i];
 
       _makeMove(state, move);
 
-      var _oponents_best_move = { };
+      var opponents_best_move = { };
 
-      var curRating = -1 * _maxMove(state, _oponents_best_move);
+      var opponents_worst_score = -1 * _maxMove(state, opponents_best_move);
 
-      if (curRating > v) {
-        v = curRating;
+      if (opponents_worst_score > score) {
+        score = opponents_worst_score;
         bestMove.move = move;
       }
 
       _retractMove(state, move);
     }
-    return v;
+    return score;
   };
 
   var _makeMove = function(state, move)
